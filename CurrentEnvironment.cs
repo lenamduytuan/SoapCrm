@@ -38,7 +38,7 @@ namespace ModernSoapApp
        // TODO Set these string values as approppriate for your app registration and organization.
        // For more information, see the SDK topic "Walkthrough: Register an app with Active Directory".
        private const string _clientID = "2c5dafdc-f731-41cf-8ec5-b32b41692cd4";
-       public const string CrmServiceUrl = "https://terraaqua.crm4.dynamics.com";       
+       public const string CrmServiceUrl = "https://terraaqua.crm4.dynamics.com";        
      
        # endregion
 
