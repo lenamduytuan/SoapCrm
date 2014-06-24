@@ -36,8 +36,12 @@ namespace ModernSoapApp
        private static AuthenticationContext _authenticationContext;
 
        // TODO Set these string values as approppriate for your app registration and organization.
+       // credentials ua: admin@terraaqua.onmicrosoft.com pw: Asdf-8626291
+       // You need to reference dll found in Dll folder and => "Visual C++ Runtime Package"
+       // for sql install use nuget package manager => Install-Package sqlite-net
+       // The project and sql.dll attached are foo x86
        // For more information, see the SDK topic "Walkthrough: Register an app with Active Directory".
-       private const string _clientID = "2c5dafdc-f731-41cf-8ec5-b32b41692cd4";
+       private const string _clientID = "9f57e443-f32f-480b-8aed-ab714ef6e702";
        public const string CrmServiceUrl = "https://terraaqua.crm4.dynamics.com";        
      
        # endregion

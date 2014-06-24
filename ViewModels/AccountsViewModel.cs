@@ -25,6 +25,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using SQLite;
 
 namespace Sample.ViewModels
 {
@@ -81,11 +82,11 @@ namespace Sample.ViewModels
                 Accounts.Add(account);
             }
 
-
+            createAccountTable();
             return Accounts;
         }
 
-        private void createAccountTable()
+        private async void createAccountTable()
         {
             try
             {
@@ -93,7 +94,7 @@ namespace Sample.ViewModels
                 using (var db = new SQLite.SQLiteConnection(dbpath))
                 {
                     // Create the tables if they don't exist
-                    db.CreateTable<person>();
+                    db.CreateTable<AccountsModel>();
                     db.Commit();
 
                     db.Dispose();
@@ -106,6 +107,37 @@ namespace Sample.ViewModels
             {
 
             }
+
+            try
+            {
+
+                
+                    var dbpath = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "data.db3");
+                    using (var db = new SQLite.SQLiteConnection(dbpath))
+                    {
+                        foreach (AccountsModel accountsModel in Accounts)
+                        {
+                            db.Insert(accountsModel);
+                        }
+                        // Create the tables if they don't exist
+                        
+
+
+                        db.Commit();
+                        db.Dispose();
+                        db.Close();
+                        var line = new MessageDialog("Records Inserted");
+                        await line.ShowAsync();
+                    }
+                
+
+            }
+            catch (SQLiteException)
+            {
+
+            }
+            
+
         }
 
         #region INotifyPropertyChanged Members

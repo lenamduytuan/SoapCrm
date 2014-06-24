@@ -145,6 +145,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="Dll\Microsoft.Preview.WindowsAzure.ActiveDirectory.Authentication.winmd" />
     <None Include="packages.config" />
     <None Include="Sample_TemporaryKey.pfx" />
   </ItemGroup>
@@ -162,6 +163,8 @@
     <Content Include="Assets\SplashScreen.scale-140.png" />
     <Content Include="Assets\SplashScreen.scale-180.png" />
     <Content Include="Common\ReadMe.txt" />
+    <Content Include="Dll\Microsoft.Preview.WindowsAzure.ActiveDirectory.Authentication.XML" />
+    <Content Include="Dll\sqlite3.dll" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
