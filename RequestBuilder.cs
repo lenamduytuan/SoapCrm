@@ -15,6 +15,7 @@
 //
 // =====================================================================
 
+using System;
 //<snippetModernSoapApp2>
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -83,6 +84,261 @@ namespace ModernSoapApp
 
             return responseBodyAsText;
         }
+        #region Public Methods
+
+        /// <summary>
+        /// Whoes the am i.
+        /// </summary>
+        /// <param name="accessToken">The access token.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
+        public async Task<List<string>> WhoAmI(string accessToken)
+        {
+            List<string> Settings = new List<string>();
+            Settings.Add("");
+            Settings.Add("");
+            Settings[0] = "";
+            Settings[1] = "";
+            var soapString = ConstructWhoAmIRequest();
+            var soapResponse = string.Empty;
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("SOAPAction", "http://schemas.microsoft.com/xrm/2011/Contracts/Services/IOrganizationService/Execute");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                var content = new StringContent(soapString, Encoding.UTF8, "text/xml");
+
+                using (var response = await client.PostAsync(GetBaseSoapUrl(), content))
+                {
+                    soapResponse = await response.Content.ReadAsStringAsync();
+                    if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                        throw new Exception(string.Format("Unable to retrieve response from SOAP Endpoint {0}", response.StatusCode));
+                    //TODO ERROR HANDLING
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(soapResponse) == false)
+            {
+                var cleanSoap = RemoveAllNamespaces(soapResponse);
+                var results = XDocument.Parse(cleanSoap).Descendants("Results");
+                var kvp = results.Descendants().Where(d => d.Name.LocalName.StartsWith("KeyValue"));
+                foreach (var pair in kvp)
+                {
+                    var key = pair.Element("key").Value;
+                    var value = pair.Element("value").Value;
+
+                    if (key.Equals("userid", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        Settings[0] = Guid.Parse(value).ToString();
+                    }
+
+                    //retrieve BU id
+                    if (key.Equals("businessunitid", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        Settings[1] = Guid.Parse(value).ToString();
+                    }
+
+                }
+            }
+            return Settings;
+        }
+
+        /// <summary>
+        /// Sets the state request.
+        /// </summary>
+        /// <param name="accessToken">The access token.</param>
+        /// <param name="entity">The entity.</param>
+        /// <param name="id">The identifier.</param>
+        /// <param name="StateCode">The state code.</param>
+        /// <param name="StatusCode">The status code.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
+        public async Task<string> SetStateRequest(string accessToken, string entity, Guid id, int StateCode, int StatusCode)
+        {
+            var soapString = ConstructSetStateSoapRequest(id, entity, StateCode.ToString(), StatusCode.ToString());
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("SOAPAction", "http://schemas.microsoft.com/xrm/2011/Contracts/Services/IOrganizationService/Execute");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                var content = new StringContent(soapString, Encoding.UTF8, "text/xml");
+                using (var response = await client.PostAsync(GetBaseSoapUrl(), content))
+                {
+                    var soapResponse = await response.Content.ReadAsStringAsync();
+                    if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                        throw new Exception(string.Format("Unable to retrieve response from SOAP Endpoint {0}", response.StatusCode));
+                    //TODO ERROR HANDLING
+                }
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Fetchs the XML request.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="accessToken">The access token.</param>
+        /// <param name="query">The query.</param>
+        /// <param name="instanceCreator">The instance creator.</param>
+        /// <returns></returns>
+        public async Task<IEnumerable<T>> FetchXmlRequest<T>(string accessToken, string xmlEncodedFetchQuery, Func<IEnumerable<XElement>, IEnumerable<T>> entitiesConverter)
+        {
+            var fetchedRecords = new List<T>();
+            var soapResponse = string.Empty;
+
+            //var soapRequest = "";//"<?xml version=\"1.0\" encoding=\"utf-8\"?>";
+            //soapRequest += "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">";
+            //soapRequest += "<s:Body>";
+            //soapRequest += "<RetrieveMultiple xmlns=\"http://schemas.microsoft.com/xrm/2011/Contracts/Services\" xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\">";
+            //soapRequest += "<query i:type=\"a:FetchExpression\" xmlns:a=\"http://schemas.microsoft.com/xrm/2011/Contracts\">";
+            //soapRequest += "<a:Query>";
+            //soapRequest += xmlEncodedFetchQuery;
+            //soapRequest += "</a:Query>";
+            //soapRequest += "</query>";
+            //soapRequest += "</RetrieveMultiple>";
+            //soapRequest += "</s:Body>";
+            //soapRequest += "</s:Envelope>";
+            var soapRequest = "<s:Envelope xmlns:s='http://schemas.xmlsoap.org/soap/envelope/'><s:Body>";
+            soapRequest += "<Execute xmlns='http://schemas.microsoft.com/xrm/2011/Contracts/Services' xmlns:i='http://www.w3.org/2001/XMLSchema-instance' >";
+            soapRequest += "<request i:type='a:RetrieveMultipleRequest' xmlns:a='http://schemas.microsoft.com/xrm/2011/Contracts'>";
+            soapRequest += "<a:Parameters xmlns:b='http://schemas.datacontract.org/2004/07/System.Collections.Generic'>";
+            soapRequest += "<a:KeyValuePairOfstringanyType>";
+            soapRequest += "<b:key>Query</b:key>";
+            soapRequest += "<b:value i:type='a:FetchExpression'>";
+            soapRequest += "<a:Query>";
+            soapRequest += xmlEncodedFetchQuery;
+            soapRequest += "</a:Query>";
+            soapRequest += "</b:value>";
+            soapRequest += "</a:KeyValuePairOfstringanyType>";
+            soapRequest += "</a:Parameters>";
+            soapRequest += "<a:RequestId i:nil='true'/>";
+            soapRequest += "<a:RequestName>RetrieveMultiple</a:RequestName>";
+            soapRequest += "</request>";
+            soapRequest += "</Execute>";
+            soapRequest += "</s:Body></s:Envelope>";
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("SOAPAction", "http://schemas.microsoft.com/xrm/2011/Contracts/Services/IOrganizationService/Execute");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                var content = new StringContent(soapRequest, Encoding.UTF8, "text/xml");
+                ///validate URL
+                using (var response = await client.PostAsync(GetBaseSoapUrl(), content))
+                {
+                    soapResponse = await response.Content.ReadAsStringAsync();
+                    if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                        throw new Exception(string.Format("Unable to retrieve response from SOAP Endpoint {0}", response.StatusCode));
+                    //TODO ERROR HANDLING
+                }
+
+                if (string.IsNullOrEmpty(soapResponse) == false)
+                {
+                    var cleanSoap = RemoveAllNamespaces(soapResponse);
+                    var entities = XDocument.Parse(cleanSoap)
+                        .Descendants("Results")
+                        .Descendants("value")
+                        .Descendants("Entities");
+
+                    return entitiesConverter(entities);
+                }
+
+                return fetchedRecords;
+            }
+
+        }
+
+        /// <summary>
+        /// Encodes the XML string.
+        /// </summary>
+        /// <param name="xml">The XML.</param>
+        /// <returns></returns>
+        public static string EncodeXmlString(string xml)
+        {
+            if (string.IsNullOrEmpty(xml))
+                return string.Empty;
+
+            return System.Net.WebUtility.HtmlEncode(xml);
+        }
+        #endregion
+
+        #region Private Methods
+
+        private string ConstructSetStateSoapRequest(Guid Id, string EntityLogicalName, string state, string status)
+        {
+            string body = "";
+            body += "<s:Envelope xmlns:s='http://schemas.xmlsoap.org/soap/envelope/'>";
+            body += "<s:Body>";
+            body += "<Execute xmlns='http://schemas.microsoft.com/xrm/2011/Contracts/Services' xmlns:i='http://www.w3.org/2001/XMLSchema-instance'>";
+            body += "<request i:type='b:SetStateRequest' xmlns:a='http://schemas.microsoft.com/xrm/2011/Contracts' xmlns:b='http://schemas.microsoft.com/crm/2011/Contracts'>";
+            body += "<a:Parameters xmlns:c='http://schemas.datacontract.org/2004/07/System.Collections.Generic'>";
+            body += "<a:KeyValuePairOfstringanyType>";
+            body += "<c:key>EntityMoniker</c:key>";
+            body += "<c:value i:type='a:EntityReference'>";
+            body += "<a:Id>" + Id.ToString() + "</a:Id>";
+            body += "<a:LogicalName>" + EntityLogicalName + "</a:LogicalName>";
+            body += "<a:Name i:nil='true' />";
+            body += "</c:value>";
+            body += "</a:KeyValuePairOfstringanyType>";
+            body += "<a:KeyValuePairOfstringanyType>";
+            body += "<c:key>State</c:key>";
+            body += "<c:value i:type='a:OptionSetValue'>";
+            body += "<a:Value>" + state + "</a:Value>";
+            body += "</c:value>";
+            body += "</a:KeyValuePairOfstringanyType>";
+            body += "<a:KeyValuePairOfstringanyType>";
+            body += "<c:key>Status</c:key>";
+            body += "<c:value i:type='a:OptionSetValue'>";
+            body += "<a:Value>" + status + "</a:Value>";
+            body += "</c:value>";
+            body += "</a:KeyValuePairOfstringanyType>";
+            body += "</a:Parameters>";
+            body += "<a:RequestId i:nil='true' />";
+            body += "<a:RequestName>SetState</a:RequestName>";
+            body += "</request>";
+            body += "</Execute>";
+            body += "</s:Body>";
+            body += "</s:Envelope>";
+            return body;
+        }
+
+        private string ConstructWhoAmIRequest()
+        {
+            string request = @"<s:Envelope xmlns:s='http://schemas.xmlsoap.org/soap/envelope/'>" +
+                               "<s:Body>" +
+                                   "<Execute xmlns='http://schemas.microsoft.com/xrm/2011/Contracts/Services' xmlns:i='http://www.w3.org/2001/XMLSchema-instance'> " +
+                                       "<request i:type='b:WhoAmIRequest' xmlns:a='http://schemas.microsoft.com/xrm/2011/Contracts' xmlns:b='http://schemas.microsoft.com/crm/2011/Contracts'> " +
+                                           "<a:Parameters xmlns:c='http://schemas.datacontract.org/2004/07/System.Collections.Generic' /> " +
+                                           "<a:RequestId i:nil='true' /> " +
+                                           "<a:RequestName>WhoAmI</a:RequestName> " +
+                                       "</request>" +
+                                   "</Execute>" +
+                               "</s:Body>" +
+                            "</s:Envelope>";
+            return request;
+        }
+
+        private Uri GetBaseSoapUrl()
+        {
+
+            return new Uri(CurrentEnvironment.CrmServiceUrl + "/XRMServices/2011/Organization.svc/web");
+        }
+
+        private string RemoveAllNamespaces(string xmlDocument)
+        {
+            XElement xmlDocumentWithoutNs = RemoveAllNamespaces(XElement.Parse(xmlDocument));
+            return xmlDocumentWithoutNs.ToString();
+        }
+
+        private XElement RemoveAllNamespaces(XElement xmlDocument)
+        {
+            if (!xmlDocument.HasElements)
+            {
+                XElement xElement = new XElement(xmlDocument.Name.LocalName);
+                xElement.Value = xmlDocument.Value;
+                return xElement;
+            }
+            return new XElement(xmlDocument.Name.LocalName, xmlDocument.Elements().Select(el => RemoveAllNamespaces(el)));
+        }
+        #endregion
+
     }
 }
 //</snippetModernSoapApp2>
