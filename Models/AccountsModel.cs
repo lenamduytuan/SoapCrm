@@ -25,9 +25,26 @@ using SQLite;
 
 namespace ModernSoapApp.Models
 {
-    public class AccountsModel :  INotifyPropertyChanged 
+    public class AccountsModel : INotifyPropertyChanged
     {
-     
+        [PrimaryKey, AutoIncrement]
+        public Guid Accountid
+        {
+
+            get { return _accountid; }
+            
+                set
+            {
+                if (value != Guid.Empty)
+                {
+                    _accountid = value;
+                    NotifyPropertyChanged("Name");
+                }
+            }
+        }
+
+        private Guid _accountid;
+
 
         private string _name;
         /// <summary>

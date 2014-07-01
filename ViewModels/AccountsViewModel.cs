@@ -86,19 +86,21 @@ namespace ModernSoapApp.ViewModels
                     {
                         account.Phone = KeyvaluePair.Element(b + "value").Value;
                     }
-                    //else if (KeyvaluePair.Element(b + "key").Value == "accountid")
-                    //{
-                    //    account.AccountId = new Guid(KeyvaluePair.Element(b + "value").Value);
-                    //}
+                    else if (KeyvaluePair.Element(b + "key").Value == "accountid")
+                    {
+                        account.Accountid = new Guid(KeyvaluePair.Element(b + "value").Value);
+                    }
                 }
                 Accounts.Add(account);
             
             }
-            createAccountTable();
+            this.Accounts = Accounts;
+           await createAccountTable();
             Accounts.Clear();
-            var av = GetAllAccountsDB();
+            var av = GetAllAccountsDB().Result;
+            this.Accounts = await GetAllAccountsDB();
             Accounts = await GetAllAccountsDB();
-
+           
             return Accounts; // Accounts;
         }
         public async Task<ObservableCollection<AccountsModel>> GetAllAccountsDB()
@@ -109,10 +111,10 @@ namespace ModernSoapApp.ViewModels
                 var dbpath = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "data.db3");
                 using (var db = new SQLite.SQLiteConnection(dbpath))
                 {
-                  
-                    var AccountsDB = db.Table<AccountsModel>();
+                 
+                    var AccountsDB = db.Table<AccountsModel>().Where(a => a.Name.Contains("a"));
 
-                    foreach (AccountsModel accountModel in AccountsDB.ToList())
+                    foreach (AccountsModel accountModel in AccountsDB)
                     {
                         _accounts_DB.Add(accountModel);
                     }
@@ -132,10 +134,46 @@ namespace ModernSoapApp.ViewModels
             }
             return _accounts_DB;
         }
+
+        private async Task AccountStore(ObservableCollection<AccountsModel> account)
+        {
+            try
+            {
+                var dbpath = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "data.db3");
+                using (var db = new SQLite.SQLiteConnection(dbpath))
+                {
+                    foreach (AccountsModel accountM in Accounts)
+                    {
+                        var accountInDB = db.Find<AccountsModel>(accountM.Accountid);
+                        if (accountInDB != null)
+                        {
+                            db.Delete(accountM);
+                        }
+                        db.Insert(accountM);
+                    }
+                    // Create the tables if they don't exist
+                    db.Commit();
+                    db.Dispose();
+                    db.Close();
+                    //var line = new MessageDialog("Records Inserted");
+                    //await line.ShowAsync();
+                }
+
+
+            }
+            catch (SQLiteException)
+            {
+
+            }
+
+
+        }
+
         /// <summary>
         /// Create Table for accout method
         /// </summary>
-        private async void createAccountTable()
+        /// 
+        private async Task<bool> createAccountTable()
         {
             try
             {
@@ -150,8 +188,8 @@ namespace ModernSoapApp.ViewModels
                     db.Dispose();
                     db.Close();
                 }
-                var line = new MessageDialog("Table Created");
-                await line.ShowAsync();
+                //var line = new MessageDialog("Table Created");
+                //await line.ShowAsync();
             }
 
             catch (SQLiteException exLite)
@@ -169,19 +207,13 @@ namespace ModernSoapApp.ViewModels
                 var dbpath = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "data.db3");
                 using (var db = new SQLite.SQLiteConnection(dbpath))
                 {
-                    foreach (AccountsModel accountsModel in Accounts)
-                    {
-                        db.Insert(accountsModel);
-                    }
+                    AccountStore(Accounts);
                     // Create the tables if they don't exist
-
-
-
                     db.Commit();
                     db.Dispose();
                     db.Close();
-                    var line = new MessageDialog("Records Inserted");
-                    await line.ShowAsync();
+                    //var line = new MessageDialog("Records Inserted");
+                    //await line.ShowAsync();
                 }
 
 
@@ -190,7 +222,7 @@ namespace ModernSoapApp.ViewModels
             {
 
             }
-            
+            return true;
 
         }
 
