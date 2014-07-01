@@ -92,7 +92,6 @@ namespace ModernSoapApp.ViewModels
                     }
                 }
                 Accounts.Add(account);
-            
             }
             this.Accounts = Accounts;
            await createAccountTable();
@@ -100,7 +99,6 @@ namespace ModernSoapApp.ViewModels
             var av = GetAllAccountsDB().Result;
             this.Accounts = await GetAllAccountsDB();
             Accounts = await GetAllAccountsDB();
-           
             return Accounts; // Accounts;
         }
         public async Task<ObservableCollection<AccountsModel>> GetAllAccountsDB()
@@ -111,26 +109,20 @@ namespace ModernSoapApp.ViewModels
                 var dbpath = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "data.db3");
                 using (var db = new SQLite.SQLiteConnection(dbpath))
                 {
-                 
                     var AccountsDB = db.Table<AccountsModel>().Where(a => a.Name.Contains("a"));
-
                     foreach (AccountsModel accountModel in AccountsDB)
                     {
                         _accounts_DB.Add(accountModel);
                     }
-                 
                     db.Commit();
                     db.Dispose();
                     db.Close();
                     //var line = new MessageDialog("Records Inserted");
                     //await line.ShowAsync();
                 }
-
-
             }
             catch (SQLiteException)
             {
-
             }
             return _accounts_DB;
         }
@@ -151,22 +143,14 @@ namespace ModernSoapApp.ViewModels
                         }
                         db.Insert(accountM);
                     }
-                    // Create the tables if they don't exist
                     db.Commit();
                     db.Dispose();
                     db.Close();
-                    //var line = new MessageDialog("Records Inserted");
-                    //await line.ShowAsync();
                 }
-
-
             }
             catch (SQLiteException)
             {
-
             }
-
-
         }
 
         /// <summary>
