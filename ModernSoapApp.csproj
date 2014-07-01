@@ -7,7 +7,7 @@
     <ProjectGuid>{2F7B3C1C-7330-4A52-822B-A01FD9CC3D99}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Sample</RootNamespace>
+    <RootNamespace>ModernSoapApp</RootNamespace>
     <AssemblyName>CrmSoapApp</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
@@ -125,10 +125,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CurrentEnvironment.cs" />
+    <Compile Include="EventArgs\NetworkChangedEventArgs.cs" />
     <Compile Include="Helper\Entities\CrmEntityView.cs" />
     <Compile Include="MainPageItem.cs" />
     <Compile Include="Models\AccountsModel.cs" />
     <Compile Include="Models\TasksModel.cs" />
+    <Compile Include="Service\Interfaces\INetworkStatusService.cs" />
+    <Compile Include="Service\NetworkStatus.cs" />
+    <Compile Include="Service\NetworkStatusService.cs" />
     <Compile Include="RequestBuilder.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -201,14 +205,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="Microsoft.VCLibs, version=11.0">
-      <Name>Microsoft Visual C++ Runtime Package</Name>
+    <SDKReference Include="Microsoft.VCLibs, version=12.0">
+      <Name>Microsoft Visual C++ 2013 Runtime Package for Windows</Name>
     </SDKReference>
-    <SDKReference Include="SQLite.WinRT, Version=3.8.5">
-      <Name>SQLite for Windows Runtime</Name>
+    <SDKReference Include="SQLite.WinRT81, Version=3.8.5">
+      <Name>SQLite for Windows Runtime %28Windows 8.1%29</Name>
     </SDKReference>
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>

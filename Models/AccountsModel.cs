@@ -17,14 +17,18 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using SQLite;
 
 namespace ModernSoapApp.Models
 {
-    public class AccountsModel : INotifyPropertyChanged
+    public class AccountsModel :  INotifyPropertyChanged 
     {
+     
+
         private string _name;
         /// <summary>
         /// Accounts ViewModel property; this property is used in the view to display its value using a Binding.

@@ -16,14 +16,18 @@
 // =====================================================================
 
 using System;
+using System.Collections.Generic;
 //<snippetModernSoapApp2>
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
-
+using System.Xml.Linq;
+using System.Xml;
+using System.Linq;
 namespace ModernSoapApp
 {
-    public static class HttpRequestBuilder
+    public class HttpRequestBuilder
     {
         /// <summary>
         /// Retrieve entity record data from the organization web service. 

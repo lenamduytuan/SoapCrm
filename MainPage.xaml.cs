@@ -17,6 +17,7 @@
 
 using System;
 using ModernSoapApp.Models;
+using ModernSoapApp.Service;
 using ModernSoapApp.Views;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -42,6 +43,7 @@ namespace ModernSoapApp
     {
         #region Class Level Members
 
+        private NetworkStatusService _networkStatusService;
         private string _accessToken = string.Empty;
         private static string _strItemClicked;             
 
@@ -73,11 +75,15 @@ namespace ModernSoapApp
         /// </summary>
         private async void Initialize()
         {
+            _networkStatusService = new NetworkStatusService();
+            if (_networkStatusService.IsOnline())
+            { 
             _accessToken = await CurrentEnvironment.Initialize();
             pageTitle.Text = "Welcome to the Windows 8 sample app for Microsoft Dynamics CRM";
             _theMenuItems = new ObservableCollection<MainPageItem>();
             for (int i = 0; i < 7; i++)
             {
+           
                 MainPageItem anItem = new MainPageItem()
                 {
                     Name = _strMenuItems[i]
@@ -86,6 +92,7 @@ namespace ModernSoapApp
             }
             itemsViewSource.Source = _theMenuItems;
             progressBar.Visibility = Visibility.Collapsed;
+            }
         }
        
         private async void NavigateTo(Type pageType, object parameter)

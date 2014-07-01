@@ -24,7 +24,7 @@ using ModernSoapApp.Models;
 using ModernSoapApp;
 using System.Xml.Linq;
 
-namespace Sample.ViewModels
+namespace ModernSoapApp.ViewModels
 {
     public class TasksViewModel : INotifyPropertyChanged
     {

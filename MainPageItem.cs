@@ -15,6 +15,7 @@
 //
 // =====================================================================
 
+using Sample.Service.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,9 @@ namespace ModernSoapApp
         return string.Format("{0:00}", Name);
       }
     }
+
+  
+      
 
     //Get the Item Image
     public string Image

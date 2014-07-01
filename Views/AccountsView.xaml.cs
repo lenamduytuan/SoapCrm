@@ -33,7 +33,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using System.Xml.Linq;
 using Microsoft.Preview.WindowsAzure.ActiveDirectory.Authentication;
-using Sample.ViewModels;
+using ModernSoapApp.ViewModels;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 
@@ -64,7 +64,7 @@ namespace ModernSoapApp.Views
         /// </summary>
         public async void GetAccountsData()
         {
-            await accountsVM.LoadAccountsData(_accessToken);
+            await accountsVM.AccountsRetrieveCRM(_accessToken,DateTime.Now);
             this.listBoxAccounts.ItemsSource = accountsVM.Accounts;
         }
 
