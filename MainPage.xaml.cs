@@ -18,6 +18,7 @@
 using System;
 using ModernSoapApp.Models;
 using ModernSoapApp.Service;
+using ModernSoapApp.Service.Interfaces;
 using ModernSoapApp.Views;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -32,6 +33,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Security.Authentication.Web;
 using ModernSoapApp.Common;
+using Sample.Service.Interfaces;
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace ModernSoapApp
@@ -43,7 +45,8 @@ namespace ModernSoapApp
     {
         #region Class Level Members
 
-        private NetworkStatusService _networkStatusService;
+        private INetworkStatusService _networkStatusService;
+        private IConfigurationService _configurationService;
         private string _accessToken = string.Empty;
         private static string _strItemClicked;             
 
@@ -76,6 +79,9 @@ namespace ModernSoapApp
         private async void Initialize()
         {
             _networkStatusService = new NetworkStatusService();
+            _configurationService = new ConfigurationService();
+
+            var set = _configurationService.GetCurrentConfiguration();
             if (_networkStatusService.IsOnline())
             { 
             _accessToken = await CurrentEnvironment.Initialize();
