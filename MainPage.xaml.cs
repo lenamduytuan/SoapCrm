@@ -50,7 +50,8 @@ namespace ModernSoapApp
         private ConfigurationService _configurationService;
         public Configuration _configuration;
         private string _accessToken = string.Empty;
-        private static string _strItemClicked;             
+        private static string _strItemClicked;
+        private bool DoSync = false;   
 
         // TODO may be in future if necessary means this data will also from server
         // Currently using static fields as menu items for displaying
@@ -71,6 +72,19 @@ namespace ModernSoapApp
         /// property is typically used to configure the page.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            _networkStatusService = new NetworkStatusService();
+            _configurationService = new ConfigurationService();
+
+            if (e.Parameter is Configuration)
+            {
+                _configuration = (Configuration) e.Parameter;
+                DoSync = false;
+            }
+            else
+            {
+                ////////////// Toto sa spusta iba ak ides prvy krat na Main view
+                DoSync = true;
+            }
             progressBar.Visibility = Visibility.Visible;
             Initialize();
         }
@@ -80,8 +94,7 @@ namespace ModernSoapApp
         /// </summary>
         private async void Initialize()
         {
-            _networkStatusService = new NetworkStatusService();
-            _configurationService = new ConfigurationService();
+         
 
             await _configurationService.SaveConfiguration();
            _configuration=await _configurationService.RestoreConfiguration();
@@ -94,9 +107,27 @@ namespace ModernSoapApp
 
             if (_networkStatusService.IsOnline())
             {
-                // Start Sync
+              
+               
+
+
                 _accessToken = await CurrentEnvironment.Initialize();
                 _configuration.AccesToken = _accessToken;
+
+                if (_configuration != null
+                   && !_configuration.IsFirstRunSynchronized && DoSync || DoSync) //Zmazat || DoSync ak nechces  sync pri kazdom spusteni, a nie len pri prvom spusteni appky
+                    _configuration.IsFirstRunSynchronized = true;
+
+                // Start Sync
+
+
+
+                //If Sync Completed
+
+                //Check if the first run was completed
+
+
+
                 pageTitle.Text = "Welcome to the Windows 8 sample app for Microsoft Dynamics CRM";
                 _theMenuItems = new ObservableCollection<MainPageItem>();
                 for (int i = 0; i < 7; i++)

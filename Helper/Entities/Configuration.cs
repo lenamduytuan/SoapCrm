@@ -13,11 +13,7 @@ namespace ModernSoapApp.Helper.Entities
    
     public class Configuration
     {
-        public Configuration()
-        {
-           
-        }
-
+        public bool IsFirstRunSynchronized { get; set; }
      
         public string ConfigTitle { get; set; }
 

@@ -27,6 +27,7 @@ namespace ModernSoapApp.Service
 
         public async Task<bool> SaveConfiguration(Configuration configuration=null)
       {
+
           _configuration = configuration;
             if (configuration == null)
             {
@@ -39,8 +40,9 @@ namespace ModernSoapApp.Service
                     CrmSoapServiceUrl = "https://ODataCrm.crm4.dynamics.comm/XRMServices/2011/Organization.svc/web",
                     CrmUrl = "https://ODataCrm.crm4.dynamics.com",
                     OAuthUrl = "https://login.windows.net/semdev.onmicrosoft.com",
-                    LastUpdateTicks = DateTime.MinValue.Ticks,
-                    CrmUserId = Guid.Empty.ToString()
+                    LastUpdateTicks = new DateTime(2013,1,1).Ticks,
+                    CrmUserId = Guid.Empty.ToString(),
+                    IsFirstRunSynchronized=false
                 };
                 configuration = _configuration;
             }
