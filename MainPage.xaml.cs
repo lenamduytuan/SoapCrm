@@ -16,6 +16,7 @@
 // =====================================================================
 
 using System;
+using ModernSoapApp.Helper.Entities;
 using ModernSoapApp.Models;
 using ModernSoapApp.Service;
 using ModernSoapApp.Service.Interfaces;
@@ -45,8 +46,9 @@ namespace ModernSoapApp
     {
         #region Class Level Members
 
-        private INetworkStatusService _networkStatusService;
-        private IConfigurationService _configurationService;
+        private NetworkStatusService _networkStatusService;
+        private ConfigurationService _configurationService;
+        public Configuration _configuration;
         private string _accessToken = string.Empty;
         private static string _strItemClicked;             
 
@@ -81,23 +83,38 @@ namespace ModernSoapApp
             _networkStatusService = new NetworkStatusService();
             _configurationService = new ConfigurationService();
 
-            var set = _configurationService.GetCurrentConfiguration();
-            if (_networkStatusService.IsOnline())
-            { 
-            _accessToken = await CurrentEnvironment.Initialize();
-            pageTitle.Text = "Welcome to the Windows 8 sample app for Microsoft Dynamics CRM";
-            _theMenuItems = new ObservableCollection<MainPageItem>();
-            for (int i = 0; i < 7; i++)
+            await _configurationService.SaveConfiguration();
+           _configuration=await _configurationService.RestoreConfiguration();
+            if (_configuration == null)
             {
-           
-                MainPageItem anItem = new MainPageItem()
-                {
-                    Name = _strMenuItems[i]
-                };
-                _theMenuItems.Add(anItem);
+                MessageDialog dialog= new MessageDialog("Configuration File Error!");
+                await dialog.ShowAsync();
             }
-            itemsViewSource.Source = _theMenuItems;
-            progressBar.Visibility = Visibility.Collapsed;
+
+
+            if (_networkStatusService.IsOnline())
+            {
+                // Start Sync
+                _accessToken = await CurrentEnvironment.Initialize();
+                _configuration.AccesToken = _accessToken;
+                pageTitle.Text = "Welcome to the Windows 8 sample app for Microsoft Dynamics CRM";
+                _theMenuItems = new ObservableCollection<MainPageItem>();
+                for (int i = 0; i < 7; i++)
+                {
+
+                    MainPageItem anItem = new MainPageItem()
+                    {
+                        Name = _strMenuItems[i]
+                    };
+                    _theMenuItems.Add(anItem);
+                }
+                itemsViewSource.Source = _theMenuItems;
+                progressBar.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                MessageDialog dialog = new MessageDialog("Internet Offline");
+                await dialog.ShowAsync();
             }
         }
        
@@ -117,7 +134,7 @@ namespace ModernSoapApp
 
             else if (_strItemClicked.Equals("Accounts"))
             {
-                this.NavigateTo(typeof(Accounts), _accessToken);
+                this.NavigateTo(typeof(Accounts), _configuration);
             }
         }
 

@@ -128,7 +128,7 @@
     <Compile Include="EventArgs\NetworkChangedEventArgs.cs" />
     <Compile Include="Helper\Entities\Configuration.cs" />
     <Compile Include="Helper\Entities\CrmEntityView.cs" />
-    <Compile Include="Helper\Entities\SerializedConfiguration.cs" />
+    <Compile Include="Helper\Entities\SerializationExtension.cs" />
     <Compile Include="MainPageItem.cs" />
     <Compile Include="Models\AccountsModel.cs" />
     <Compile Include="Models\TasksModel.cs" />
@@ -207,6 +207,9 @@
     </Reference>
     <Reference Include="Microsoft.Preview.WindowsAzure.ActiveDirectory.Authentication">
       <HintPath>packages\Microsoft.Preview.WindowsAzure.ActiveDirectory.Authentication.0.6.1\lib\netcore45\Microsoft.Preview.WindowsAzure.ActiveDirectory.Authentication.winmd</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>packages\Newtonsoft.Json.6.0.3\lib\netcore45\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

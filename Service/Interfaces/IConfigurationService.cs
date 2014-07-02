@@ -9,8 +9,6 @@ namespace ModernSoapApp.Service.Interfaces
 {
    public interface IConfigurationService
     {
-        Task<Configuration> GetCurrentConfiguration();
-        void SaveConfiguration(Configuration configuration);
-        List<Configuration> GetAllConfigurations();
+       
     }
 }

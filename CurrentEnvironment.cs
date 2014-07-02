@@ -23,6 +23,8 @@ using System.Net;
 using System.Threading;
 using System.IO;
 using System.Text;
+using ModernSoapApp.Service;
+using ModernSoapApp.Helper.Entities;
 
 namespace ModernSoapApp
 {
@@ -32,7 +34,7 @@ namespace ModernSoapApp
    public static class CurrentEnvironment
    {
        # region Class Level Members
-
+ 
        private static AuthenticationContext _authenticationContext;
 
        // TODO Set these string values as approppriate for your app registration and organization.
