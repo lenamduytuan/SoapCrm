@@ -88,6 +88,77 @@ namespace ModernSoapApp
 
             return responseBodyAsText;
         }
+        public static async Task<string> RetrieveMultiple(string accessToken, string[] Columns, string entity, DateTime lastSync)
+        {
+            // Build a list of entity attributes to retrieve as a string.
+            string columnsSet = string.Empty;
+            foreach (string Column in Columns)
+            {
+                columnsSet += "<b:string>" + Column + "</b:string>";
+            }
+
+            var avc = lastSync.ToUniversalTime().ToString("s");
+
+
+            // Default SOAP envelope string. This XML code was obtained using the SOAPLogger tool.
+            string xmlSOAP =
+             @"<s:Envelope xmlns:s='http://schemas.xmlsoap.org/soap/envelope/'>
+                <s:Body>
+                  <RetrieveMultiple xmlns='http://schemas.microsoft.com/xrm/2011/Contracts/Services' xmlns:i='http://www.w3.org/2001/XMLSchema-instance'>
+                    <query i:type='a:QueryExpression' xmlns:a='http://schemas.microsoft.com/xrm/2011/Contracts'><a:ColumnSet>
+                    <a:AllColumns>false</a:AllColumns><a:Columns xmlns:b='http://schemas.microsoft.com/2003/10/Serialization/Arrays'>" + columnsSet +
+                   @"</a:Columns></a:ColumnSet><a:Criteria><a:Conditions><a:ConditionExpression><a:AttributeName>createdon</a:AttributeName><a:Operator>GreaterEqual</a:Operator>
+              <a:Values xmlns:b='http://schemas.microsoft.com/2003/10/Serialization/Arrays'>
+                <b:anyType i:type='c:dateTime' xmlns:c='http://www.w3.org/2001/XMLSchema'>" + lastSync.ToUniversalTime().ToString("s")+ @"</b:anyType>
+              </a:Values>
+              <a:EntityName i:nil='true' />
+            </a:ConditionExpression>
+            <a:ConditionExpression>
+              <a:AttributeName>modifiedon</a:AttributeName>
+              <a:Operator>GreaterEqual</a:Operator>
+              <a:Values xmlns:b='http://schemas.microsoft.com/2003/10/Serialization/Arrays'>
+                <b:anyType i:type='c:dateTime' xmlns:c='http://www.w3.org/2001/XMLSchema'>" + lastSync.ToUniversalTime().ToString("s") + @"</b:anyType>
+              </a:Values>
+              <a:EntityName i:nil='true' />
+            </a:ConditionExpression>
+          </a:Conditions>
+          <a:FilterOperator>Or</a:FilterOperator>
+          <a:Filters />
+        </a:Criteria>
+                    <a:Distinct>false</a:Distinct><a:EntityName>" + entity + @"</a:EntityName><a:LinkEntities /><a:Orders />
+                    <a:PageInfo><a:Count>0</a:Count><a:PageNumber>0</a:PageNumber><a:PagingCookie i:nil='true' />
+                    <a:ReturnTotalRecordCount>false</a:ReturnTotalRecordCount>
+                    </a:PageInfo><a:NoLock>false</a:NoLock></query>
+                  </RetrieveMultiple>
+                </s:Body>
+              </s:Envelope>";
+
+            // The URL for the SOAP endpoint of the organization web service.
+            string url = CurrentEnvironment.CrmServiceUrl + "/XRMServices/2011/Organization.svc/web";
+
+            // Use the RetrieveMultiple CRM message as the SOAP action.
+            string SOAPAction = "http://schemas.microsoft.com/xrm/2011/Contracts/Services/IOrganizationService/RetrieveMultiple";
+
+            // Create a new HTTP request.
+            HttpClient httpClient = new HttpClient();
+
+            // Set the HTTP authorization header using the access token.
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            // Finish setting up the HTTP request.
+            HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Post, url);
+            req.Headers.Add("SOAPAction", SOAPAction);
+            req.Method = HttpMethod.Post;
+            req.Content = new StringContent(xmlSOAP);
+            req.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("text/xml; charset=utf-8");
+
+            // Send the request asychronously and wait for the response.
+            HttpResponseMessage response;
+            response = await httpClient.SendAsync(req);
+            var responseBodyAsText = await response.Content.ReadAsStringAsync();
+
+            return responseBodyAsText;
+        }
         #region Public Methods
 
         /// <summary>

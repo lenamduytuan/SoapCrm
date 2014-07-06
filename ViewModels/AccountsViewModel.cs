@@ -59,8 +59,8 @@ namespace ModernSoapApp.ViewModels
         /// </summary>    
         public async Task<ObservableCollection<AccountsModel>> AccountsRetrieveCRM(string AccessToken,DateTime lastSync)
         {
-        
-            var AccountsResponseBody = await HttpRequestBuilder.RetrieveMultipleSOAP(AccessToken, new string[] { "name", "emailaddress1", "telephone1" }, "account");
+
+            var AccountsResponseBody = await HttpRequestBuilder.RetrieveMultiple(AccessToken, new string[] { "name", "emailaddress1", "telephone1" }, "account", lastSync);
 
             ObservableCollection<AccountsModel> Accounts = new ObservableCollection<AccountsModel>();
 

@@ -85,7 +85,7 @@ namespace ModernSoapApp.Views
         /// </summary>
         public async void GetAccountsData()
         {
-            await accountsVM.AccountsRetrieveCRM(_accessToken,DateTime.Now);
+          var accs=  await accountsVM.AccountsRetrieveCRM(_accessToken,DateTime.Now.AddMonths(-1));
             this.listBoxAccounts.ItemsSource = accountsVM.Accounts;
         }
 
