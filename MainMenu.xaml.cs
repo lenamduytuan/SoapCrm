@@ -63,16 +63,16 @@ namespace ModernSoapApp
             _networkStatusService = new NetworkStatusService();
             _configurationService = new ConfigurationService();
 
-            if (e.Parameter is Configuration)
-            {
-                _configuration = (Configuration) e.Parameter;
-                DoSync = false;
-            }
-            else
-            {
-                ////////////// Toto sa spusta iba ak ides prvy krat na Main view
-                DoSync = true;
-            }
+            //if (e.Parameter is Configuration)
+            //{
+            //    _configuration = (Configuration) e.Parameter;
+            //    DoSync = false;
+            //}
+            //else
+            //{
+            //    ////////////// Toto sa spusta iba ak ides prvy krat na Main view
+            //    DoSync = true;
+            //}
             progressBar.Visibility = Visibility.Visible;
             Initialize();
         }
@@ -85,7 +85,6 @@ namespace ModernSoapApp
 
             progressBar.Visibility = Visibility.Collapsed;
             
-            
            _configuration=await _configurationService.RestoreConfiguration();
             if (_configuration == null)
             {
@@ -94,21 +93,17 @@ namespace ModernSoapApp
             
 
 
-            if (_networkStatusService.IsOnline())
+            if (_networkStatusService.IsOnline() && _configuration != null && _configuration.IsFirstRunSynchronized)
             {
-              
-               
-
-
                 _accessToken = await CurrentEnvironment.Initialize();
                 _configuration.AccesToken = _accessToken;
 
-                if (_configuration != null
-                   && !_configuration.IsFirstRunSynchronized && DoSync || DoSync) //Zmazat || DoSync ak nechces  sync pri kazdom spusteni, a nie len pri prvom spusteni appky
-                    _configuration.IsFirstRunSynchronized = true;
+                
+                   //&& !_configuration.IsFirstRunSynchronized && ) //Zmazat || DoSync ak nechces  sync pri kazdom spusteni, a nie len pri prvom spusteni appky
+                    //_configuration.IsFirstRunSynchronized = true;
 
                 // Start Sync
-
+                    //Synchronization.StartSync(dateTime,isFirstTimeSynced)
 
 
                 //If Sync Completed

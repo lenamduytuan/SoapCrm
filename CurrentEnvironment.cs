@@ -61,25 +61,21 @@ namespace ModernSoapApp
            // Obtain the redirect URL for the app. This is only needed for app registration.
            string redirectUrl = WebAuthenticationBroker.GetCurrentApplicationCallbackUri().ToString();
 
-           // Obtain an authentication token to access the web service. 
-           _authenticationContext = new AuthenticationContext(_oauthUrl, false);
-           AuthenticationResult result = await _authenticationContext.AcquireTokenAsync(CrmServiceUrl, _clientID);
+           AuthenticationResult result;
 
-           // Verify that an access token was successfully acquired.
-           if (AuthenticationStatus.Succeeded != result.Status)
+           do
            {
-               if (result.Error == "authentication_failed")
-               {
-                   // Clear the token cache and try again.
-                   (AuthenticationContext.TokenCache as DefaultTokenCache).Clear();
-                   _authenticationContext = new AuthenticationContext(_oauthUrl, false);
-                   result = await _authenticationContext.AcquireTokenAsync(CrmServiceUrl, _clientID);
-               }
-               else
+               // Obtain an authentication token to access the web service. 
+               _authenticationContext = new AuthenticationContext(_oauthUrl, false);
+               result = await _authenticationContext.AcquireTokenAsync(CrmServiceUrl, _clientID);
+               if (AuthenticationStatus.Succeeded != result.Status)
                {
                    DisplayErrorWhenAcquireTokenFails(result);
                }
-           }
+           } while (AuthenticationStatus.Succeeded != result.Status);
+           
+           
+           
            return result.AccessToken;
        }
 
@@ -150,6 +146,10 @@ namespace ModernSoapApp
 
             switch (result.Error)
             {
+                case "authentication_failed":
+                    dialog = new MessageDialog("Authentication failed please try again.");
+                    await dialog.ShowAsync();
+                    break;
                 case "authentication_canceled":
                     // User cancelled, so no need to display a message.
                     break;

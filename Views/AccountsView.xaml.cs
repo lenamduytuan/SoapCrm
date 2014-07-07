@@ -72,7 +72,7 @@ namespace ModernSoapApp.Views
         public void NavigateToMainScreen()
         {
             
-            this.NavigateTo(typeof(MainPage), _configuration);
+            this.NavigateTo(typeof(MainMenu), _configuration);
 
         }
         private async void NavigateTo(Type pageType, object parameter)
