@@ -85,13 +85,13 @@ namespace ModernSoapApp
 
             progressBar.Visibility = Visibility.Collapsed;
             
-            await _configurationService.SaveConfiguration();
+            
            _configuration=await _configurationService.RestoreConfiguration();
             if (_configuration == null)
             {
-                MessageDialog dialog= new MessageDialog("Configuration File Error!");
-                await dialog.ShowAsync();
+                await _configurationService.SaveConfiguration();  
             }
+            
 
 
             if (_networkStatusService.IsOnline())
