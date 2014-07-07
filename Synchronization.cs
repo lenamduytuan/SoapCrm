@@ -44,6 +44,7 @@ namespace ModernSoapApp
             //contqacty
 
             //set last synced
+            conf.LastUpdateTicks = DateTime.Now.Ticks;
         }
 
     }
