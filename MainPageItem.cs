@@ -15,6 +15,7 @@
 //
 // =====================================================================
 
+using Sample.Service.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,9 @@ namespace ModernSoapApp
       }
     }
 
+  
+      
+
     //Get the Item Image
     public string Image
     {
@@ -49,28 +53,28 @@ namespace ModernSoapApp
     }
 
     //Create the Item
-    public UIElement XAMLItem
-    {
-      get
-      {
-        //XAML Item Uri...
-        string xamlPath = string.Format("ms-appx:///Assets/MainPage/{0}.xaml", Name);
-        Uri xamlUri = new Uri(xamlPath, UriKind.Absolute);
+    //public UIElement XAMLItem
+    //{
+    //  get
+    //  {
+    //    //XAML Item Uri...
+    //    string xamlPath = string.Format("ms-appx:///Assets/MainPage/{0}.xaml", Name);
+    //    Uri xamlUri = new Uri(xamlPath, UriKind.Absolute);
 
-        //Create new canvas element for the rectangle and path to be loaded into...
-        Canvas targetCanvas = new Canvas();
+    //    //Create new canvas element for the rectangle and path to be loaded into...
+    //    Canvas targetCanvas = new Canvas();
 
-        //Load the contents of the XAML Card's .xaml file into the in memory canvas using App.LoadComponent
-        App.LoadComponent(targetCanvas, xamlUri);
+    //    //Load the contents of the XAML Card's .xaml file into the in memory canvas using App.LoadComponent
+    //    App.LoadComponent(targetCanvas, xamlUri);
 
-        //Wrap the new canvas up in a Viewbox so that it scales to fit the container.  
-        Viewbox viewBox = new Viewbox();
-        viewBox.Child = targetCanvas;
+    //    //Wrap the new canvas up in a Viewbox so that it scales to fit the container.  
+    //    Viewbox viewBox = new Viewbox();
+    //    viewBox.Child = targetCanvas;
 
-        //Return the Viewbox...
-        return viewBox;
-      }
-    }
+    //    //Return the Viewbox...
+    //    return viewBox;
+    //  }
+    //}
 
   }
 }

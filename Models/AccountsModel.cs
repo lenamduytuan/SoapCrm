@@ -17,14 +17,35 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using SQLite;
 
 namespace ModernSoapApp.Models
 {
     public class AccountsModel : INotifyPropertyChanged
     {
+        [PrimaryKey, AutoIncrement]
+        public Guid Accountid
+        {
+
+            get { return _accountid; }
+            
+                set
+            {
+                if (value != Guid.Empty)
+                {
+                    _accountid = value;
+                    NotifyPropertyChanged("Name");
+                }
+            }
+        }
+
+        private Guid _accountid;
+
+
         private string _name;
         /// <summary>
         /// Accounts ViewModel property; this property is used in the view to display its value using a Binding.

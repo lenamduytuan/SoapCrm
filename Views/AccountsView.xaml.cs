@@ -20,7 +20,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using Windows.UI.Popups;
 using ModernSoapApp.Common;
+using ModernSoapApp.Helper.Entities;
 using ModernSoapApp.Models;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -33,7 +35,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using System.Xml.Linq;
 using Microsoft.Preview.WindowsAzure.ActiveDirectory.Authentication;
-using Sample.ViewModels;
+using ModernSoapApp.ViewModels;
+using Windows.UI.Core;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 
@@ -52,11 +55,29 @@ namespace ModernSoapApp.Views
             accountsVM = new AccountsViewModel();
         }
         private string _accessToken;
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        private Configuration _configuration;
+       protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            _accessToken = (string)e.Parameter;
+            _configuration = (Configuration)e.Parameter;
+            if (_configuration == null)
+            {
+                MessageDialog dialog = new MessageDialog("Error on Sending parameters no data will be displayed!");
+                return;
+            }
+            _accessToken = _configuration.AccesToken;
             GetAccountsData();
+        }
+
+        public void NavigateToMainScreen()
+        {
+            
+            this.NavigateTo(typeof(MainPage), _configuration);
+
+        }
+        private async void NavigateTo(Type pageType, object parameter)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Frame.Navigate(pageType, parameter));
         }
 
         /// <summary>
@@ -64,7 +85,7 @@ namespace ModernSoapApp.Views
         /// </summary>
         public async void GetAccountsData()
         {
-            await accountsVM.LoadAccountsData(_accessToken);
+          var accs=  await accountsVM.AccountsRetrieveCRM(_accessToken,DateTime.Now.AddMonths(-1));
             this.listBoxAccounts.ItemsSource = accountsVM.Accounts;
         }
 

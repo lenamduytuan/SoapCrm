@@ -23,6 +23,8 @@ using System.Net;
 using System.Threading;
 using System.IO;
 using System.Text;
+using ModernSoapApp.Service;
+using ModernSoapApp.Helper.Entities;
 
 namespace ModernSoapApp
 {
@@ -32,7 +34,7 @@ namespace ModernSoapApp
    public static class CurrentEnvironment
    {
        # region Class Level Members
-
+ 
        private static AuthenticationContext _authenticationContext;
 
        // TODO Set these string values as approppriate for your app registration and organization.
@@ -41,8 +43,8 @@ namespace ModernSoapApp
        // for sql install use nuget package manager => Install-Package sqlite-net
        // The project and sql.dll attached are foo x86
        // For more information, see the SDK topic "Walkthrough: Register an app with Active Directory".
-       private const string _clientID = "9f57e443-f32f-480b-8aed-ab714ef6e702";
-       public const string CrmServiceUrl = "https://terraaqua.crm4.dynamics.com";        
+       private const string _clientID = "f14c1144-914b-4302-9df3-462d6ebdb332";
+       public const string CrmServiceUrl = "https://ODataCrm.crm4.dynamics.com";        
      
        # endregion
 
