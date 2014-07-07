@@ -93,7 +93,7 @@ namespace ModernSoapApp
             
 
 
-            if (_networkStatusService.IsOnline() && _configuration != null && _configuration.IsFirstRunSynchronized)
+            if (_networkStatusService.IsOnline() && _configuration != null && _configuration.IsFirstRunSynchronized())
             {
                 _accessToken = await CurrentEnvironment.Initialize();
                 _configuration.AccesToken = _accessToken;
@@ -103,7 +103,7 @@ namespace ModernSoapApp
                     //_configuration.IsFirstRunSynchronized = true;
 
                 // Start Sync
-                    //Synchronization.StartSync(dateTime,isFirstTimeSynced)
+                    //Synchronization.StartSync(dateTime)
 
 
                 //If Sync Completed
